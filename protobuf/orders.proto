@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 option go_package = "github.com/uchidas-rogue/grpc-test/common/orders";
-
+option csharp_namespace = "grpc_orders.Scripts.Generated";
 
 service OrderService {
     rpc CreateOrder (CreateOrderRequest) returns (CreateOrderResponse);
