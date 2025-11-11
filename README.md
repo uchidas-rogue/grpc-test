@@ -25,3 +25,15 @@ vscodeへ拡張インストール
 * Tooltitude for Protobuf (proto files)
 
 
+### サーバーセットアップ
+
+credsフォルダへ移動して、期間長めで適当な自己証明書を作成する
+```
+cd creds
+openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 36500 -nodes -subj "/CN=localhost"
+```
+
+サーバー起動
+```
+make run-orders
+```

@@ -29,12 +29,23 @@ func (h *OrderGrpcHandler) GetOrders(ctx context.Context, req *orders.GetOrderRe
 }
 
 func (h *OrderGrpcHandler) CreateOrder(ctx context.Context, req *orders.CreateOrderRequest) (*orders.CreateOrderResponse, error) {
+
+	oList := h.ordersService.GetOrders(ctx)
+	// 最新のorderIdを取得してインクリメント
+	var maxOrderID int32 = 0
+	for _, o := range oList {
+		if o.OrderId > maxOrderID {
+			maxOrderID = o.OrderId
+		}
+	}
+	newOrderID := maxOrderID + 1
+
 	// Assuming CreateOrderRequest has fields: OrderId, Items, Amount, Status
 	order := &orders.Order{
-		OrderId:    11,
-		CustomerId: 2,
-		ProductId:  3,
-		Quantity:   14,
+		OrderId:    newOrderID,
+		CustomerId: req.GetCustomerId(),
+		ProductId:  req.GetProductId(),
+		Quantity:   req.GetQuantity(),
 	}
 
 	err := h.ordersService.CreateOrder(ctx, order)

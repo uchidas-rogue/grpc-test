@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 
 	"github.com/uchidas-rogue/kitchen/services/common/genproto/orders"
 )
@@ -15,6 +16,7 @@ func NewOrderService() *OrderService {
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, order *orders.Order) error {
+	log.Printf("Creating order: %+v\n", order)
 	ordersDb = append(ordersDb, order)
 	return nil
 }

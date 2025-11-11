@@ -7,6 +7,7 @@ import (
 	handler "github.com/uchidas-rogue/kitchen/services/orders/handler/orders"
 	"github.com/uchidas-rogue/kitchen/services/orders/service"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 type gRPCServer struct {
@@ -19,18 +20,23 @@ func NewGRPCServer(addr string) *gRPCServer {
 
 func (s *gRPCServer) Run() error {
 
-	listener, err := net.Listen("tcp", s.addr)
+	// 証明書と秘密鍵の読み込み
+	creds, err := credentials.NewServerTLSFromFile("creds/server.crt", "creds/server.key")
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("failed to load TLS keys: %v", err)
 	}
 
-	gRPCServer := grpc.NewServer()
+	gRPCServer := grpc.NewServer(grpc.Creds(creds))
 
 	// register services here
 	orderService := service.NewOrderService()
 	handler.NewGrpcOrdersService(gRPCServer, orderService)
 
-	log.Println("Starting gRPC server on", s.addr)
+	listener, err := net.Listen("tcp", s.addr)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
 
+	log.Println("Starting gRPC server on", s.addr)
 	return gRPCServer.Serve(listener)
 }
